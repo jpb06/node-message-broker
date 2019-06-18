@@ -18,9 +18,10 @@ export async function pushTo<T>(
     else return false;
 }
 
-export async function pop<T>(
-    queueName: string
-): Promise<T | undefined> {
+export async function popFrom<T>(
+    queueName: string,
+    fn: (value: T) => void
+): Promise<void> {
     config.Verify();
 
     let connection = await amqplib.connect(`amqp://${config.username}:${config.password}@${config.host}`);
@@ -31,11 +32,9 @@ export async function pop<T>(
         channel.consume(queueName, (msg) => {
             if (msg !== null) {
                 channel.ack(msg);
-                return JSON.parse(msg.content.toString()) as T;
-            } else {
-                return undefined;
+                let t: T = JSON.parse(msg.content.toString()) as T;
+                fn(t); 
             }
         });
     }
-    else return undefined;
 }
