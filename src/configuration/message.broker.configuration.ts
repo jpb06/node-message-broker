@@ -1,5 +1,5 @@
 ﻿export interface MessageBrokerConfig {
-    host: string,
+    messageBrokerHost: string,
     messageBrokerUsername: string,
     messageBrokerPassword: string
 }
@@ -12,7 +12,7 @@ export abstract class MessageBrokerConfiguration {
     public static Setup(
         config: MessageBrokerConfig
     ): void {
-        this.host = config.host;
+        this.host = config.messageBrokerHost;
         this.username = config.messageBrokerUsername;
         this.password = config.messageBrokerPassword;
     }
