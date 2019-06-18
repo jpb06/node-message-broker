@@ -16,3 +16,4 @@ Mainly some code factorization package for dowpro-replays-watcher-api & crevette
 *  0.0.2 : Adding declaration types to package.json.
 *  0.0.3 : Incorrect export for config logic..
 *  0.0.4 : Fixing popFrom function: now accepting a callback function.
+*  0.0.5 : Minor change in config interface.

@@ -1,6 +1,6 @@
 {
   "name": "node-message-broker",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "node-message-broker",
   "main": "js/index.js",
   "types": "typings/index.d.ts",
