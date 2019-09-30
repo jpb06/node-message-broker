@@ -7,15 +7,20 @@ export async function pushTo<T>(
 ): Promise<boolean> {
     config.Verify();
 
-    let connection = await amqplib.connect(`amqp://${config.username}:${config.password}@${config.host}`);
-    let channel = await connection.createChannel();
-    let assertQueue = await channel.assertQueue(queueName);
+    const connection = await amqplib.connect(`amqp://${config.username}:${config.password}@${config.host}`);
 
-    if (assertQueue) {
-        let result = await channel.sendToQueue(queueName, new Buffer(JSON.stringify(message)));
-        return result;
+    try {
+        const channel = await connection.createChannel();
+        const assertQueue = await channel.assertQueue(queueName);
+
+        if (assertQueue) {
+            const result = await channel.sendToQueue(queueName, new Buffer(JSON.stringify(message)));
+            return result;
+        }
+        else return false;
+    } finally {
+        connection.close();
     }
-    else return false;
 }
 
 export async function popFrom<T>(
@@ -24,17 +29,23 @@ export async function popFrom<T>(
 ): Promise<void> {
     config.Verify();
 
-    let connection = await amqplib.connect(`amqp://${config.username}:${config.password}@${config.host}`);
-    let channel = await connection.createChannel();
-    let assertQueue = await channel.assertQueue(queueName);
+    const connection = await amqplib.connect(`amqp://${config.username}:${config.password}@${config.host}`);
 
-    if (assertQueue) {
-        channel.consume(queueName, (msg) => {
-            if (msg !== null) {
-                channel.ack(msg);
-                let t: T = JSON.parse(msg.content.toString()) as T;
-                fn(t); 
-            }
-        });
+    try {
+
+        const channel = await connection.createChannel();
+        const assertQueue = await channel.assertQueue(queueName);
+
+        if (assertQueue) {
+            channel.consume(queueName, (msg) => {
+                if (msg !== null) {
+                    channel.ack(msg);
+                    let t: T = JSON.parse(msg.content.toString()) as T;
+                    fn(t);
+                }
+            });
+        }
+    } finally {
+        connection.close();
     }
 }

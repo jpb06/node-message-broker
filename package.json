@@ -1,6 +1,6 @@
 {
   "name": "node-message-broker",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "node-message-broker",
   "main": "js/index.js",
   "types": "typings/index.d.ts",
@@ -8,12 +8,12 @@
     "name": "jpb06"
   },
   "devDependencies": {
-    "@types/amqplib": "^0.5.12",
-    "@types/node": "^8.0.14",
-    "fs-extra": "^8.0.1",
+    "@types/amqplib": "^0.5.13",
+    "@types/node": "^8.10.54",
+    "fs-extra": "^8.1.0",
     "gulp": "^4.0.2"
   },
   "dependencies": {
-    "amqplib": "^0.5.3"
+    "amqplib": "^0.5.5"
   }
 }
