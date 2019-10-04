@@ -8,9 +8,10 @@ export async function pushTo<T>(
     config.Verify();
 
     const connection = await amqplib.connect(`amqp://${config.username}:${config.password}@${config.host}`);
+    const channel = await connection.createChannel();
 
     try {
-        const channel = await connection.createChannel();
+
         const assertQueue = await channel.assertQueue(queueName);
 
         if (assertQueue) {
@@ -19,25 +20,26 @@ export async function pushTo<T>(
         }
         else return false;
     } finally {
-        connection.close();
+        await channel.close();
+        await connection.close();
     }
 }
 
 export async function popFrom<T>(
     queueName: string,
+    closeWhenDone: boolean,
     fn: (value: T) => void
 ): Promise<void> {
     config.Verify();
 
     const connection = await amqplib.connect(`amqp://${config.username}:${config.password}@${config.host}`);
+    const channel = await connection.createChannel();
 
     try {
-
-        const channel = await connection.createChannel();
         const assertQueue = await channel.assertQueue(queueName);
 
         if (assertQueue) {
-            channel.consume(queueName, (msg) => {
+            await channel.consume(queueName, (msg) => {
                 if (msg !== null) {
                     channel.ack(msg);
                     let t: T = JSON.parse(msg.content.toString()) as T;
@@ -46,6 +48,9 @@ export async function popFrom<T>(
             });
         }
     } finally {
-        connection.close();
+        if (closeWhenDone) {
+            await channel.close();
+            await connection.close();
+        }
     }
 }
